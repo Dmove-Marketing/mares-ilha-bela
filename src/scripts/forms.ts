@@ -20,6 +20,7 @@ export function initForms() {
     (form as any).__formsInitialized = true;
 
     let started = false;
+    let isSubmitting = false;
     const formId  = form.dataset.formId!;
     const project = form.dataset.project || window.location.hostname;
 
@@ -42,8 +43,8 @@ export function initForms() {
       }
     });
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    const handleSubmit = async () => {
+      if (isSubmitting) return;
 
       const hp = form.querySelector<HTMLInputElement>('[name="website"]');
       if (hp && hp.value) return;
@@ -73,13 +74,49 @@ export function initForms() {
         }
       });
 
+      // Validação de formato: email
+      form.querySelectorAll<HTMLInputElement>('input[type="email"]').forEach((field) => {
+        if (!field.value) return; // campo vazio já capturado pelo required acima
+        const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(field.value);
+        if (!ok) {
+          isValid = false;
+          (field as HTMLElement).style.borderColor = '#ef4444';
+          (field as HTMLElement).style.outline = '2px solid #ef4444';
+          if (!firstInvalid) firstInvalid = field;
+          const clear = () => {
+            (field as HTMLElement).style.removeProperty('border-color');
+            (field as HTMLElement).style.removeProperty('outline');
+            field.removeEventListener('input', clear);
+          };
+          field.addEventListener('input', clear);
+        }
+      });
+
+      // Validação de formato: telefone (mínimo 10 dígitos — DDD + número)
+      form.querySelectorAll<HTMLInputElement>('[name="telefone"]').forEach((field) => {
+        if (!field.value) return;
+        const digits = field.value.replace(/\D/g, '');
+        if (digits.length < 10) {
+          isValid = false;
+          (field as HTMLElement).style.borderColor = '#ef4444';
+          (field as HTMLElement).style.outline = '2px solid #ef4444';
+          if (!firstInvalid) firstInvalid = field;
+          const clear = () => {
+            (field as HTMLElement).style.removeProperty('border-color');
+            (field as HTMLElement).style.removeProperty('outline');
+            field.removeEventListener('input', clear);
+          };
+          field.addEventListener('input', clear);
+        }
+      });
+
       if (!isValid) {
         firstInvalid!.scrollIntoView({ behavior: 'smooth', block: 'center' });
         (firstInvalid as HTMLElement).focus();
         return;
       }
 
-      const submitBtn  = form.querySelector<HTMLButtonElement>('.form-submit, [type="submit"]');
+      const submitBtn  = form.querySelector<HTMLButtonElement>('.form-submit');
       const btnText    = submitBtn?.querySelector<HTMLElement>('.btn-text');
       const btnLoading = submitBtn?.querySelector<HTMLElement>('.btn-loading');
 
@@ -87,6 +124,7 @@ export function initForms() {
         ? document.getElementById(gridId)?.querySelector('[id$="FormMsg"]') as HTMLElement | null
         : form.querySelector('.form-error') as HTMLElement | null;
 
+      isSubmitting = true;
       if (submitBtn) submitBtn.disabled = true;
 
       if (btnText && btnLoading) {
@@ -111,13 +149,24 @@ export function initForms() {
       const dateStr = now.toLocaleDateString('pt-BR');
       const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-      const capitalizedFields: Record<string, string> = {};
-      let fonteBase = rawData['fonte'] || project;
-      Object.entries(rawData).forEach(([key, val]) => {
-        if (key === 'fonte') return;
-        const capKey = key.charAt(0).toUpperCase() + key.slice(1);
-        capitalizedFields[capKey] = val;
-      });
+      // Extração e divisão de nome/sobrenome
+      const fullName = (rawData['nome'] || rawData['Nome'] || '').trim();
+      let firstName = fullName;
+      let lastName = rawData['sobrenome'] || rawData['Sobrenome'] || '';
+      if (!lastName && fullName.includes(' ')) {
+        const parts = fullName.split(' ');
+        firstName = parts[0];
+        lastName = parts.slice(1).join(' ');
+      }
+
+      const tipoEvento = rawData['tipo'] || rawData['tipo_evento'] || rawData['Tipo'] || rawData['Tipo de evento'] || '';
+      const dataEvento = rawData['data'] || rawData['data_evento'] || rawData['data_prevista'] || rawData['Data do evento'] || '';
+      const convidados = rawData['pessoas'] || rawData['convidados'] || rawData['Pessoas'] || rawData['Convidados'] || '';
+      const whatsapp = rawData['telefone'] || rawData['whatsapp'] || rawData['WhatsApp'] || '';
+      const email = rawData['email'] || rawData['E-mail'] || '';
+
+      const cleanPath = window.location.pathname.replace(/^\/|\/$/g, '').replace(/\.html$/, '') || 'casamentos';
+      const fonteBase = rawData['fonte'] || `Landing page/${cleanPath}`;
 
       const trackingParamKeys = [
         'utm_source', 'utm_medium', 'utm_campaign', 'utm_term',
@@ -129,7 +178,7 @@ export function initForms() {
       trackingParamKeys.forEach(k => { if (tracking[k]) qs.set(k, tracking[k]); });
       const fonte = qs.toString() ? `${fonteBase}?${qs.toString()}` : fonteBase;
 
-      // Campos Meta CAPI — enviados também como campos flat para uso direto no n8n
+      // Campos Meta CAPI
       const metaCapi: Record<string, string> = {};
       if (tracking['fbc'])         metaCapi['fbc']         = tracking['fbc'];
       if (tracking['fbp'])         metaCapi['fbp']         = tracking['fbp'];
@@ -137,18 +186,28 @@ export function initForms() {
       if (tracking['event_id'])    metaCapi['event_id']    = tracking['event_id'];
 
       const payload: Record<string, string> = {
-        ...capitalizedFields,
-        Fonte: fonte,
-        Data: dateStr,
+        'Sem rótulo field_bd1ca98': '',
+        'Tipo de evento': tipoEvento,
+        'Data do evento': dataEvento,
+        'Convidados': convidados,
+        'Sem rótulo field_58c27e9': '',
+        'Nome': firstName,
+        'Sobrenome': lastName,
+        'WhatsApp': whatsapp,
+        'E-mail': email,
+        'Fonte': fonte,
+        'Data': dateStr,
         'Horário': timeStr,
         'URL da página': window.location.href,
         'Agente de usuário': navigator.userAgent,
         'IP remoto': '',
         'Desenvolvido por': 'Dmove',
-        form_id: formId,
-        form_name: formId,
+        'form_id': formId,
+        'form_name': formId,
         ...metaCapi,
       };
+
+      if (rawData['detalhes']) payload['Detalhes adicionais'] = rawData['detalhes'];
 
       try {
         const res = await fetch(submitUrl, {
@@ -162,7 +221,7 @@ export function initForms() {
         let json: any = {};
         try { json = await res.json(); } catch {}
 
-        (window as any).dataLayer?.push({ event: 'form_submit', form_id: formId, project, ...capitalizedFields });
+        (window as any).dataLayer?.push({ event: 'form_submit', form_id: formId, project });
 
         const redir = redirectUrl || json.redirect;
         if (redir) {
@@ -185,6 +244,7 @@ export function initForms() {
             </div>`;
         }
       } catch (err: any) {
+        isSubmitting = false;
         (window as any).dataLayer?.push({ event: 'form_error', form_id: formId, error: err.message });
 
         if (msgEl) {
@@ -204,6 +264,17 @@ export function initForms() {
           }
         }
       }
+    };
+
+    const submitTrigger = form.querySelector<HTMLButtonElement>('.form-submit');
+    submitTrigger?.addEventListener('click', () => { handleSubmit(); });
+
+    form.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'TEXTAREA' || target.tagName === 'BUTTON') return;
+      e.preventDefault();
+      handleSubmit();
     });
   });
 }

@@ -1,10 +1,16 @@
 {
-  "project_name": "Nome do Projeto",
-  "project_slug": "slug-do-projeto",
-  "client": "Nome do Cliente",
-  "environment": "development",
+  "project_name": "Mares Ilha Bela",
+  "project_slug": "mares-ilha-bela",
+  "client": "Mares Ilha Bela",
+  "environment": "production",
   "tracking": {
-    "gtm_id": "GTM-XXXXXXX",
+    "gtm_id": "GTM-K8V6X3RG",
+    "enabled": true
+  },
+  "whatsapp": {
+    "phone": "5511999999999",
+    "display_name": "Espaço Mares",
+    "avatar": "/images/perfil.webp",
     "enabled": true
   },
   "forms": {
@@ -12,7 +18,7 @@
       "id": "lead-form",
       "redirect_on_success": "",
       "webhooks": [
-        "https://n8n.dmove.com.br/webhook/SLUG-DO-PROJETO"
+        "https://server3n8n.dmove.com.br/webhook/mares-ilhabela"
       ],
       "fields_required": [
         "nome",
@@ -23,12 +29,12 @@
   },
   "deploy": {
     "user": "root",
-    "server": "",
-    "remote_path": "/var/www/dominio.com.br"
+    "server": "157.173.197.116",
+    "remote_path": "/var/www/eventos.maresilhamall.com.br"
   },
   "meta": {
     "created_at": "YYYY-MM-DD",
     "last_updated": "YYYY-MM-DD",
-    "owner": "Responsável"
+    "owner": "Dmove"
   }
 }
