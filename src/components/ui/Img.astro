@@ -17,7 +17,7 @@ interface Props {
 const {
   src,
   alt,
-  width = 1200,
+  width,
   height,
   priority = false,
   quality = 80,
@@ -26,24 +26,40 @@ const {
   id,
 } = Astro.props;
 
+const isRemote = /^https?:\/\//.test(src);
+
 const images = import.meta.glob<{ default: ImageMetadata }>(
   '/src/assets/images/**/*.{jpg,jpeg,png,webp,avif,gif}',
   { eager: true }
 );
 
 const key = `/src/assets/images/${src}`;
-const mod = images[key];
+const mod = isRemote ? null : images[key];
 
-if (!mod) {
+if (!isRemote && !mod) {
   console.warn(`[Img] imagem não encontrada: ${key}`);
 }
 ---
 
-{mod ? (
+{isRemote ? (
+  <Image
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    inferSize={!width && !height}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : undefined}
+    quality={quality}
+    class={className}
+    style={style}
+    id={id}
+  />
+) : mod ? (
   <Image
     src={mod.default}
     alt={alt}
-    width={width}
+    width={width ?? 1200}
     height={height}
     loading={priority ? 'eager' : 'lazy'}
     fetchpriority={priority ? 'high' : undefined}
@@ -56,7 +72,7 @@ if (!mod) {
   <img
     src=""
     alt={alt}
-    width={width}
+    width={width ?? 1200}
     height={height ?? undefined}
     class={className}
     style={style}
