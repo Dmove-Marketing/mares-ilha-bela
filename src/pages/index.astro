@@ -15,13 +15,7 @@ const waStep1Fields = [
     { value: 'confraternizacao', label: 'Confraternização social' },
     { value: 'outros', label: 'Outros' },
   ]},
-  { name: 'convidados', type: 'select', label: 'Número de Convidados', required: true, options: [
-    { value: '', label: 'Selecione a quantidade', disabled: true, selected: true },
-    { value: 'ate-50', label: 'Até 50 convidados' },
-    { value: '50-100', label: '50 a 100 convidados' },
-    { value: '100-200', label: '100 a 200 convidados' },
-    { value: '200-plus', label: 'Mais de 200 convidados' },
-  ]},
+  { name: 'convidados', type: 'number', label: 'Número de Convidados', min: '1', required: true },
   { name: 'data_prevista', type: 'date', label: 'Data Prevista', required: true, min: '2024-01-01' },
   { name: 'mensagem', type: 'textarea', label: 'Mensagem (Opcional)', required: false, rows: 3, placeholder: 'Conte-nos um pouco sobre como imagina o seu dia especial...' },
 ];
