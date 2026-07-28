@@ -1,34 +1,5 @@
 /* ---------- FONTS ---------- */
-@font-face{
-  font-family:"Host Grotesk";
-  src:url("assets/fonts/HostGrotesk-Light.ttf") format("truetype");
-  font-weight:300; font-style:normal; font-display:swap;
-}
-@font-face{
-  font-family:"Host Grotesk";
-  src:url("assets/fonts/HostGrotesk-Regular.ttf") format("truetype");
-  font-weight:400; font-style:normal; font-display:swap;
-}
-@font-face{
-  font-family:"Host Grotesk";
-  src:url("assets/fonts/HostGrotesk-LightItalic.ttf") format("truetype");
-  font-weight:300; font-style:italic; font-display:swap;
-}
-@font-face{
-  font-family:"Host Grotesk";
-  src:url("assets/fonts/HostGrotesk-Italic.ttf") format("truetype");
-  font-weight:400; font-style:italic; font-display:swap;
-}
-@font-face{
-  font-family:"Host Grotesk";
-  src:url("assets/fonts/HostGrotesk-Medium.ttf") format("truetype");
-  font-weight:500; font-style:normal; font-display:swap;
-}
-@font-face{
-  font-family:"Host Grotesk";
-  src:url("assets/fonts/HostGrotesk-MediumItalic.ttf") format("truetype");
-  font-weight:500; font-style:italic; font-display:swap;
-}
+/* Host Grotesk agora é carregada via Google Fonts (link no <head> de casamentos.astro) */
 
 /* ---------- RESET ---------- */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -82,7 +53,7 @@ h1,h2,h3{
 }
 h1{font-size:clamp(1.85rem,4.4vw,3.6rem);line-height:.94;}
 h2{font-size:clamp(1.65rem,3.6vw,3rem);line-height:.94;}
-em{font-family:"Host Grotesk";font-style:italic;font-weight:500;}
+em{font-family:"Host Grotesk", sans-serif;font-style:italic;font-weight:500;}
 
 p{font-size:1.02rem;color:#3a475b;font-weight:300;line-height:1.2;}
 .lead{font-size:1.12rem;color:#3a475b;max-width:46ch;line-height:1.2;}
