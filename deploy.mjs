@@ -14,3 +14,7 @@ if (!server) {
 const dest = `${user}@${server}:${remote_path}`;
 console.log(`Enviando dist/ → ${dest}`);
 execSync(`scp -r dist/* ${dest}`, { stdio: "inherit" });
+
+console.log(`Ajustando permissões no servidor remoto...`);
+execSync(`ssh ${user}@${server} "find ${remote_path} -type d -exec chmod 755 {} \\; && find ${remote_path} -type f -exec chmod 644 {} \\;"`, { stdio: "inherit" });
+
