@@ -660,7 +660,6 @@ footer .dmove-logo:hover{opacity:1;transform:scale(1.05);}
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
     scroll-snap-type: x mandatory !important;
-    scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
     gap: 0 !important;
     width: 100% !important;

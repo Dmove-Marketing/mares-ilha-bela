@@ -399,13 +399,19 @@ function initMobileGalleryCarousel() {
         
         // Instant wrap-around check
         if (targetIndex === 0) {
-          grid.style.scrollBehavior = 'auto';
+          grid.style.setProperty('scroll-behavior', 'auto', 'important');
           grid.scrollLeft = vItems[vItems.length - 2].offsetLeft;
+          setTimeout(() => {
+            grid.style.removeProperty('scroll-behavior');
+          }, 50);
         } else if (targetIndex === vItems.length - 1) {
-          grid.style.scrollBehavior = 'auto';
+          grid.style.setProperty('scroll-behavior', 'auto', 'important');
           grid.scrollLeft = vItems[1].offsetLeft;
+          setTimeout(() => {
+            grid.style.removeProperty('scroll-behavior');
+          }, 50);
         }
-      }, 400);
+      }, 500);
     };
 
     prevBtn.addEventListener('click', () => navigateTo(-1));
@@ -437,11 +443,17 @@ function initMobileGalleryCarousel() {
 
         // Instant wrap-around for manual scroll/swipe
         if (closestIndex === 0) {
-          grid.style.scrollBehavior = 'auto';
+          grid.style.setProperty('scroll-behavior', 'auto', 'important');
           grid.scrollLeft = vItems[vItems.length - 2].offsetLeft;
+          setTimeout(() => {
+            grid.style.removeProperty('scroll-behavior');
+          }, 50);
         } else if (closestIndex === vItems.length - 1) {
-          grid.style.scrollBehavior = 'auto';
+          grid.style.setProperty('scroll-behavior', 'auto', 'important');
           grid.scrollLeft = vItems[1].offsetLeft;
+          setTimeout(() => {
+            grid.style.removeProperty('scroll-behavior');
+          }, 50);
         }
       }, 100);
     });
