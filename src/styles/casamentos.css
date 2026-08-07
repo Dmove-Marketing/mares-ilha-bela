@@ -601,6 +601,9 @@ footer .dmove-logo:hover{opacity:1;transform:scale(1.05);}
   .infra-list{grid-template-columns:repeat(2,1fr);}
   .contato-grid{grid-template-columns:1fr;gap:50px;}
   .local-grid{grid-template-columns:1fr;gap:44px;}
+  .parallax-section {
+    background-attachment: scroll;
+  }
 }
 
 @media (max-width:860px){
