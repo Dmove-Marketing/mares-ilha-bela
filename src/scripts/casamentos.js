@@ -39,7 +39,7 @@ revealEls.forEach(el => io.observe(el));
 
 // lightbox
 function initLightbox() {
-  const galeriaImgs = Array.from(document.querySelectorAll('#galeriaGrid img'));
+  const galeriaImgs = Array.from(document.querySelectorAll('#galeriaGrid .g-item:not(.g-item-clone) img'));
   const lightbox = document.getElementById('lightbox');
   const lbImg = document.getElementById('lbImg');
   const lbCount = document.getElementById('lbCount');
@@ -277,4 +277,184 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initCustomDatePickers);
 } else {
   initCustomDatePickers();
+}
+
+// Mobile Gallery Carousel with Infinite Loop and Arrows
+function initMobileGalleryCarousel() {
+  const grid = document.getElementById('galeriaGrid');
+  if (!grid) return;
+
+  const isMobile = window.innerWidth <= 860;
+  
+  let arrowsWrapper = document.querySelector('.galeria-arrows-wrapper');
+  
+  if (!isMobile) {
+    if (arrowsWrapper) {
+      arrowsWrapper.parentNode.insertBefore(grid, arrowsWrapper);
+      arrowsWrapper.remove();
+    }
+    const clones = grid.querySelectorAll('.g-item-clone');
+    clones.forEach(c => c.remove());
+    
+    grid.style.scrollBehavior = '';
+    delete grid.dataset.scrollListenerAdded;
+    delete grid.dataset.initializedScroll;
+    return;
+  }
+
+  // Target original items excluding clones
+  let items = Array.from(grid.querySelectorAll('.g-item:not(.g-item-clone)'));
+  if (items.length <= 1) return;
+
+  let firstClone = grid.querySelector('.g-item-clone-first');
+  let lastClone = grid.querySelector('.g-item-clone-last');
+
+  if (!firstClone && !lastClone) {
+    const firstItem = items[0];
+    const lastItem = items[items.length - 1];
+
+    firstClone = firstItem.cloneNode(true);
+    firstClone.classList.add('g-item-clone', 'g-item-clone-first');
+    
+    lastClone = lastItem.cloneNode(true);
+    lastClone.classList.add('g-item-clone', 'g-item-clone-last');
+
+    // Lightbox click delegation on clones
+    firstClone.addEventListener('click', () => {
+      const clickEvent = new MouseEvent('click', { bubbles: true });
+      firstItem.dispatchEvent(clickEvent);
+    });
+    lastClone.addEventListener('click', () => {
+      const clickEvent = new MouseEvent('click', { bubbles: true });
+      lastItem.dispatchEvent(clickEvent);
+    });
+
+    grid.appendChild(firstClone);
+    grid.insertBefore(lastClone, grid.firstChild);
+  }
+
+  // Get current visual elements including clones
+  const getVisualItems = () => [
+    grid.querySelector('.g-item-clone-last'),
+    ...Array.from(grid.querySelectorAll('.mosaic-block .g-item')),
+    grid.querySelector('.g-item-clone-first')
+  ].filter(Boolean);
+
+  // Position at original first item initially (index 1)
+  if (!grid.dataset.initializedScroll) {
+    setTimeout(() => {
+      const vItems = getVisualItems();
+      if (vItems[1]) {
+        grid.scrollLeft = vItems[1].offsetLeft;
+        grid.dataset.initializedScroll = 'true';
+      }
+    }, 100);
+  }
+
+  // Build arrow navigation
+  if (!arrowsWrapper) {
+    arrowsWrapper = document.createElement('div');
+    arrowsWrapper.className = 'galeria-arrows-wrapper';
+    
+    grid.parentNode.insertBefore(arrowsWrapper, grid);
+    arrowsWrapper.appendChild(grid);
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'galeria-arrow galeria-prev';
+    prevBtn.innerHTML = '&#8249;';
+    prevBtn.setAttribute('aria-label', 'Foto anterior');
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'galeria-arrow galeria-next';
+    nextBtn.innerHTML = '&#8250;';
+    nextBtn.setAttribute('aria-label', 'Próxima foto');
+
+    arrowsWrapper.appendChild(prevBtn);
+    arrowsWrapper.appendChild(nextBtn);
+
+    const navigateTo = (direction) => {
+      if (grid.dataset.isScrolling === 'true') return;
+      grid.dataset.isScrolling = 'true';
+
+      const vItems = getVisualItems();
+      const scrollLeft = grid.scrollLeft;
+      
+      let currentIndex = 1;
+      let minDiff = Infinity;
+      vItems.forEach((item, idx) => {
+        const diff = Math.abs(item.offsetLeft - scrollLeft);
+        if (diff < minDiff) {
+          minDiff = diff;
+          currentIndex = idx;
+        }
+      });
+
+      let targetIndex = currentIndex + direction;
+
+      grid.style.scrollBehavior = 'smooth';
+      grid.scrollLeft = vItems[targetIndex].offsetLeft;
+
+      setTimeout(() => {
+        grid.dataset.isScrolling = 'false';
+        
+        // Instant wrap-around check
+        if (targetIndex === 0) {
+          grid.style.scrollBehavior = 'auto';
+          grid.scrollLeft = vItems[vItems.length - 2].offsetLeft;
+        } else if (targetIndex === vItems.length - 1) {
+          grid.style.scrollBehavior = 'auto';
+          grid.scrollLeft = vItems[1].offsetLeft;
+        }
+      }, 400);
+    };
+
+    prevBtn.addEventListener('click', () => navigateTo(-1));
+    nextBtn.addEventListener('click', () => navigateTo(1));
+  }
+
+  // Handle loop adjustments on swipe
+  if (!grid.dataset.scrollListenerAdded) {
+    let scrollEndTimer;
+    grid.addEventListener('scroll', () => {
+      if (grid.dataset.isScrolling === 'true') return;
+
+      clearTimeout(scrollEndTimer);
+      scrollEndTimer = setTimeout(() => {
+        const vItems = getVisualItems();
+        const scrollLeft = grid.scrollLeft;
+        const width = grid.clientWidth;
+        if (width === 0) return;
+        
+        let closestIndex = 1;
+        let minDiff = Infinity;
+        vItems.forEach((item, idx) => {
+          const diff = Math.abs(item.offsetLeft - scrollLeft);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestIndex = idx;
+          }
+        });
+
+        // Instant wrap-around for manual scroll/swipe
+        if (closestIndex === 0) {
+          grid.style.scrollBehavior = 'auto';
+          grid.scrollLeft = vItems[vItems.length - 2].offsetLeft;
+        } else if (closestIndex === vItems.length - 1) {
+          grid.style.scrollBehavior = 'auto';
+          grid.scrollLeft = vItems[1].offsetLeft;
+        }
+      }, 100);
+    });
+    grid.dataset.scrollListenerAdded = 'true';
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initMobileGalleryCarousel();
+    window.addEventListener('resize', initMobileGalleryCarousel);
+  });
+} else {
+  initMobileGalleryCarousel();
+  window.addEventListener('resize', initMobileGalleryCarousel);
 }
