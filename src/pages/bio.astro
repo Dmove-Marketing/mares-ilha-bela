@@ -26,8 +26,13 @@ const bioTipoOptions = [
   { value: 'Outros', label: 'Outros' }
 ];
 
+const waTipoEventoOptions = [
+  { value: '', label: 'Selecione o tipo de evento', disabled: true, selected: true },
+  ...bioTipoOptions.slice(1)
+];
+
 const waStep1Fields = [
-  { name: 'tipo_evento', type: 'select', label: 'Tipo de Evento', required: true, options: bioTipoOptions },
+  { name: 'tipo_evento', type: 'select', label: 'Tipo de Evento', required: true, options: waTipoEventoOptions },
   { name: 'convidados', type: 'number', label: 'Número de Convidados', min: '1', required: true },
   { name: 'data_prevista', type: 'date', label: 'Data Prevista', required: true, min: '2024-01-01' },
   { name: 'mensagem', type: 'textarea', label: 'Mensagem (Opcional)', required: false, rows: 3, placeholder: 'Conte-nos um pouco sobre como imagina o seu evento...' },

@@ -1,0 +1,424 @@
+---
+import Base from '../layouts/Base.astro';
+import config from '../../config.json';
+import Img from '../components/ui/Img.astro';
+import LeadForm from '../components/forms/LeadForm.astro';
+import WhatsAppModal from '../components/layout/WhatsAppModal.astro';
+import '../styles/eventos-corporativos.css';
+
+const tipoEventoOptions = [
+  { value: '', label: 'Selecione' },
+  { value: 'Aniversário', label: 'Aniversário' },
+  { value: 'Aniversário debutante', label: 'Aniversário debutante' },
+  { value: 'Bodas', label: 'Bodas' },
+  { value: 'Casamento', label: 'Casamento' },
+  { value: 'Confraternização corporativa', label: 'Confraternização corporativa' },
+  { value: 'Confraternização social', label: 'Confraternização social' },
+  { value: 'Corporativo', label: 'Corporativo' },
+  { value: 'Feiras e Exposições', label: 'Feiras e Exposições' },
+  { value: 'Formatura', label: 'Formatura' },
+  { value: 'Happy Hours', label: 'Happy Hours' },
+  { value: 'Masterclass e Palestras', label: 'Masterclass e Palestras' },
+  { value: 'Mentorias e Treinamentos', label: 'Mentorias e Treinamentos' },
+  { value: 'Offsite corporativo', label: 'Offsite corporativo' },
+  { value: 'Reuniões de Networking', label: 'Reuniões de Networking' },
+  { value: 'Shows e Festivais', label: 'Shows e Festivais' },
+  { value: 'Workshops, Conferências e Seminários', label: 'Workshops, Conferências e Seminários' },
+  { value: 'Outros', label: 'Outros' }
+];
+
+const waTipoEventoOptions = [
+  { value: '', label: 'Selecione o tipo de evento', disabled: true, selected: true },
+  ...tipoEventoOptions.slice(1)
+];
+
+const waStep1Fields = [
+  { name: 'empresa', type: 'text', label: 'Empresa', placeholder: 'Nome da sua empresa', required: true },
+];
+
+const waStep2Fields = [
+  { name: 'tipo_evento', type: 'select', label: 'Tipo de Evento', required: true, options: waTipoEventoOptions },
+  { name: 'convidados', type: 'number', label: 'Número de Participantes', min: '1', required: true },
+  { name: 'data_prevista', type: 'date', label: 'Data Prevista', required: true, min: '2024-01-01' },
+  { name: 'mensagem', type: 'textarea', label: 'Mensagem (Opcional)', required: false, rows: 3, placeholder: 'Conte-nos um pouco sobre o evento...' },
+];
+---
+
+<Base
+  title="Espaço Mares | Eventos Corporativos em Ilhabela"
+  description="Realize seu evento corporativo com vista para o mar de Ilhabela. Estrutura versátil integrada ao Mares Ilha Mall para confraternizações, palestras, treinamentos e lançamentos."
+  ogImage="https://media.dmove.com.br/clients/mares-ilha-bela/photos/hero_corporativos_resultado.webp"
+>
+<!-- ===================== HEADER ===================== -->
+<header id="site-header">
+  <div class="wrap">
+    <nav class="main-nav main-nav-left">
+      <a href="#sobre">Sobre</a>
+      <a href="#tipos-eventos">Possibilidades</a>
+      <a href="#infra">Estrutura</a>
+    </nav>
+    <a href="#topo" class="logo-mark">
+      <Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/logo-white_resultado.webp" alt="Espaço Mares" class="logo-white" priority />
+      <Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/logo_resultado.webp" alt="Espaço Mares" class="logo-navy" />
+    </a>
+    <nav class="main-nav main-nav-right">
+      <a href="#galeria">Galeria</a>
+      <a href="#local">Hospedagem</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-nav" id="mobileNav">
+  <a href="#sobre">Sobre</a>
+  <a href="#tipos-eventos">Possibilidades</a>
+  <a href="#infra">Estrutura</a>
+  <a href="#galeria">Galeria</a>
+  <a href="#local">Hospedagem</a>
+  <a href="#contato" class="btn gold">Planejar evento</a>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero" id="topo">
+  <Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/hero_corporativos_resultado.webp" alt="Espaço Mares Ilhabela decorado para evento corporativo de frente para o mar" class="bg" priority />
+  <div class="wrap">
+    <span class="eyebrow">Ilhabela • Eventos corporativos</span>
+    <h1>Dê vida a suas ideias<br>com um cenário<br><em>deslumbrante</em></h1>
+    <p class="lead">Realize seu evento corporativo com vista para o mar de Ilhabela.</p>
+    <div class="hero-actions">
+      <a href="#contato" class="btn gold">Conheça o Espaço Mares</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SOBRE ===================== -->
+<section id="sobre" class="reveal">
+  <div class="wrap split">
+    <div class="split-media frame">
+      <Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/sobre_corporativos_resultado.webp" alt="Ambiente corporativo do Espaço Mares em Ilhabela" />
+    </div>
+    <div class="split-text">
+      <h1>Criado em Ilhabela<br>para receber empresas<br><em>que pensam diferente.</em></h1>
+      <p style="margin-top:22px;">O Espaço Mares une a conveniência de estar integrado ao Mares Ilha Mall à atmosfera inspiradora de Ilhabela.</p>
+      <p style="margin-top:16px;">Com uma estrutura versátil e liberdade para personalizar cada detalhe, o espaço se adapta a diferentes formatos de eventos corporativos, sempre respeitando a identidade, os objetivos e a cultura de cada empresa.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TIPOS DE EVENTOS ===================== -->
+<section id="tipos-eventos" class="reveal">
+  <div class="wrap">
+    <div class="center-head">
+      <h2>Um espaço.<br><em>Diferentes possibilidades.</em></h2>
+      <p class="lead" style="margin:20px auto 0;">Ambientes que se adaptam aos objetivos da sua empresa e recebe eventos corporativos de diferentes formatos.</p>
+    </div>
+
+    <div class="eventos-grid">
+      <div class="evento-card">
+        <div class="evento-card-img">
+          <Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/confraternizacoes_corporativos_resultado.webp" alt="Confraternização corporativa no Espaço Mares" />
+        </div>
+        <div class="evento-card-body">
+          <h2>Confraternizações de <br class="mobile-only">fim de ano</h2>
+          <p>Celebre conquistas e reúna sua equipe em um ambiente que convida a criar conexões.</p>
+        </div>
+      </div>
+
+      <div class="evento-card">
+        <div class="evento-card-img">
+          <Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/palestra_corporativos_resultado.webp" alt="Palestras e apresentações corporativas em Ilhabela" />
+        </div>
+        <div class="evento-card-body">
+          <h2>Palestras e apresentações</h2>
+          <p>Um espaço preparado para compartilhar estratégias, resultados e novos caminhos.</p>
+        </div>
+      </div>
+
+      <div class="evento-card">
+        <div class="evento-card-img">
+          <Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/treinamentos_corporativos_resultado.webp" alt="Treinamentos e workshops empresariais em Ilhabela" />
+        </div>
+        <div class="evento-card-body">
+          <h2>Treinamentos e workshops</h2>
+          <p>Ambientes flexíveis para aprender, desenvolver equipes e trocar conhecimento.</p>
+        </div>
+      </div>
+
+      <div class="evento-card">
+        <div class="evento-card-img">
+          <Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/lancamentos_corporativos_resultado.webp" alt="Lançamentos e eventos institucionais no Espaço Mares" />
+        </div>
+        <div class="evento-card-body">
+          <h2>Lançamentos e <br class="mobile-only">eventos institucionais</h2>
+          <p>Apresente novidades em um espaço que valoriza cada detalhe da experiência.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INFRAESTRUTURA ===================== -->
+<section id="infra" class="reveal">
+  <div class="wrap">
+    <div class="center-head">
+      <h1>Estrutura para receber.<br><strong class="infra-title-bold">Liberdade para criar.</strong></h1>
+      <p class="lead" style="margin:20px auto 0;">Versatilidade para criar experiências com a identidade da sua marca.</p>
+    </div>
+
+    <div class="infra-list">
+      <div class="infra-item">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12h20M2 12l5-5M2 12l5 5M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9"/></svg>
+        </div>
+        <div>
+          <h3>Vista para o mar</h3>
+          <p>Um ambiente que inspira novas conversas.</p>
+        </div>
+      </div>
+
+      <div class="infra-item">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Espaços versáteis</h3>
+          <p>Configure o layout conforme o objetivo do encontro.</p>
+        </div>
+      </div>
+
+      <div class="infra-item">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M3 12h18v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3Z"/><path d="M4 16v3M20 16v3"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Mobiliário próprio</h3>
+          <p>Mais praticidade para montar cada ambiente.</p>
+        </div>
+      </div>
+
+      <div class="infra-item">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Rede de parceiros</h3>
+          <p>Buffet, audiovisual e fornecedores escolhidos por você.</p>
+        </div>
+      </div>
+
+      <div class="infra-item">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 16v3a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h10v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-3"/><path d="M4 16 5.4 9.6A2 2 0 0 1 7.3 8h9.4a2 2 0 0 1 1.9 1.6L20 16"/><path d="M4 16h16"/><circle cx="7.5" cy="16" r="1"/><circle cx="16.5" cy="16" r="1"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Estacionamento próprio</h3>
+          <p>Mais conforto para toda a equipe.</p>
+        </div>
+      </div>
+
+      <div class="infra-item">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Integração ao Mares Ilha Mall</h3>
+          <p>Mais conveniência durante todo o evento.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="center-head" style="margin-top:40px;">
+      <a href="#contato" class="btn gold">Solicitar proposta</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PARALLAX ===================== -->
+<div class="parallax-corporativo" aria-label="Vista panorâmica do Espaço Mares em Ilhabela"></div>
+
+<!-- ===================== GALERIA ===================== -->
+<section id="galeria" class="reveal">
+  <div class="wrap">
+    <div class="center-head">
+      <h2>Veja o que sua empresa<br>pode criar com o<br><em>Espaço Mares.</em></h2>
+      <p class="lead" style="margin:20px auto 0;">Cada encontro ganha uma identidade diferente. Inspire-se para criar o seu.</p>
+    </div>
+    <div class="mosaic-grid" id="galeriaGrid">
+      <div class="mosaic-block block-a">
+        <div class="g-item"><Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/galeria_corporativos07_resultado.webp" alt="Espaço Mares - Evento corporativo em Ilhabela" /></div>
+        <div class="g-item"><Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/galeria_corporativos08_resultado.webp" alt="Espaço Mares - Evento corporativo em Ilhabela" /></div>
+        <div class="g-item"><Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/galeria_corporativos05_resultado.webp" alt="Espaço Mares - Evento corporativo em Ilhabela" /></div>
+        <div class="g-item"><Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/galeria_corporativos04_resultado.webp" alt="Espaço Mares - Evento corporativo em Ilhabela" /></div>
+      </div>
+      <div class="mosaic-block block-b">
+        <div class="g-item"><Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/galeria_corporativos03_resultado.webp" alt="Espaço Mares - Evento corporativo em Ilhabela" /></div>
+        <div class="g-item"><Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/galeria_corporativos02_resultado.webp" alt="Espaço Mares - Evento corporativo em Ilhabela" /></div>
+        <div class="g-item"><Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/galeria_corporativos01_resultado.webp" alt="Espaço Mares - Evento corporativo em Ilhabela" /></div>
+        <div class="g-item"><Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/galeria_corporativos06_resultado.webp" alt="Espaço Mares - Evento corporativo em Ilhabela" /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">&times;</button>
+  <button class="lb-arrow lb-prev" id="lbPrev">&#8249;</button>
+  <img src="" alt="" id="lbImg" />
+  <button class="lb-arrow lb-next" id="lbNext">&#8250;</button>
+  <span class="lb-count" id="lbCount"></span>
+</div>
+
+<!-- ===================== HOTÉIS PRÓXIMOS / LOCALIZAÇÃO ===================== -->
+<section id="local" class="bg-cream reveal">
+  <div class="wrap">
+    <div class="center-head" style="margin-bottom:56px;">
+      <h2>Hospedagem próxima<br>para <em>receber o time</em></h2>
+      <p class="lead" style="margin:20px auto 0;">A poucos minutos do local, seus convidados encontram opções de hospedagem para aproveitar o evento com mais tranquilidade.</p>
+    </div>
+    <div class="local-grid">
+      <div class="map-frame">
+        <iframe src="https://www.google.com/maps?q=Mares+Ilha+Mall,+Ilhabela+SP&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Mapa do Espaço Mares em Ilhabela"></iframe>
+      </div>
+      <div class="hotels">
+        <h3>Hotéis próximos</h3>
+
+        <div class="hotel">
+          <div>
+            <div class="h-name">Pousada Vila das Velas</div>
+            <div class="h-addr">R. do Guaiá, 51 — Perequê, Ilhabela - SP, 11630-000</div>
+          </div>
+          <div class="h-dist">290 m</div>
+        </div>
+
+        <div class="hotel">
+          <div>
+            <div class="h-name">Pousada Bons Ventos</div>
+            <div class="h-addr">R. Benedito Serafim Sampaio, 371 — Praia do Perequê, Ilhabela - SP, 11630-000</div>
+          </div>
+          <div class="h-dist">200 m</div>
+        </div>
+
+        <div class="hotel">
+          <div>
+            <div class="h-name">Barra do Piuva Porto Hotel</div>
+            <div class="h-addr">Av. Brasil, 1140 — Piúva, Ilhabela - SP, 11630-000</div>
+          </div>
+          <div class="h-dist">2,9 km</div>
+        </div>
+
+        <div class="hotel">
+          <div>
+            <div class="h-name">Hotel Ilhabela</div>
+            <div class="h-addr">Av. Pedro de Paula Moraes, 151 — Saco da Capela, Ilhabela - SP, 11630-000</div>
+          </div>
+          <div class="h-dist">4,5 km</div>
+        </div>
+
+        <div class="hotel">
+          <div>
+            <div class="h-name">Velinn Feiticeira Praia Hotel Ilhabela</div>
+            <div class="h-addr">R. Helena Alves de Carvalho, 238 — Portinho, Ilhabela - SP, 11630-000</div>
+          </div>
+          <div class="h-dist">6,2 km</div>
+        </div>
+
+        <div class="hotel">
+          <div>
+            <div class="h-name">Pousada Montemar</div>
+            <div class="h-addr">R. José J. da Silva, 281 — Itaguassu, Ilhabela - SP, 11633-826</div>
+          </div>
+          <div class="h-dist">2,6 km</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="center-head" style="margin-top:40px;">
+      <a href="#contato" class="btn gold">Solicitar contato</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONTATO ===================== -->
+<section id="contato" class="reveal">
+  <Img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/contato-bg.webp" alt="Ilhabela vista do alto, praia e mata" class="bg" width={1920} height={1080} />
+  <div class="wrap contato-grid">
+    <div class="contato-info">
+      <h1>Vamos planejar seu<br>evento corporativo?</h1>
+      <p class="lead" style="margin-top:18px;">Conte para nós o que sua equipe imagina. Vamos construir um evento alinhado aos seus objetivos.</p>
+
+      <div class="contact-line">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
+        <span>Mares Ilha Mall — Ilhabela, SP</span>
+      </div>
+    </div>
+
+    <div class="contato-form">
+      <LeadForm
+        formId="lead-form"
+        prefix="wedding"
+        project={config.project_slug}
+        submitUrl={config.forms['lead-form'].webhooks[0]}
+        redirectUrl={config.forms['lead-form'].redirect_on_success}
+        submitText="Enviar solicitação"
+        honeypot
+        fields={[
+          { name: 'nome', type: 'text', label: 'Nome', required: true, full: true },
+          { name: 'empresa', type: 'text', label: 'Empresa', placeholder: 'Nome da sua empresa', required: false, full: true },
+          { name: 'telefone', type: 'tel', label: 'Telefone', required: true },
+          { name: 'email', type: 'email', label: 'E-mail', required: true },
+          { name: 'data', type: 'date', label: 'Data do evento', required: false },
+          { name: 'pessoas', type: 'number', label: 'Número de participantes', min: '1', required: false },
+          { name: 'tipo', type: 'select', label: 'Tipo de evento', required: false, full: true, options: tipoEventoOptions },
+          { name: 'detalhes', type: 'textarea', label: 'Detalhes adicionais', rows: 4, required: false, full: true }
+        ]}
+      />
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="footer-bottom">
+    <div class="footer-col footer-col-left">
+      <p class="copyright">Copyright © 2026 Espaço Mares — <br class="mobile-only">Todos os direitos reservados</p>
+    </div>
+    <div class="footer-col footer-col-center">
+      <img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/logo-white_resultado.webp" alt="Espaço Mares" class="client-logo" />
+    </div>
+    <div class="footer-col footer-col-right">
+      <div class="developed-by">
+        <span>Desenvolvido por</span>
+        <a href="https://dmove.com.br" target="_blank" rel="noopener noreferrer" class="dmove-link">
+          <img src="https://media.dmove.com.br/clients/mares-ilha-bela/photos/Logotipo-dmovepng.webp" alt="Dmove" class="dmove-logo" />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<WhatsAppModal
+  contactInStep1={true}
+  step1Fields={waStep1Fields}
+  step2Fields={waStep2Fields}
+  welcomeMessage={"Olá! Quer realizar o seu evento corporativo no Espaço Mares?\nPreencha os dados abaixo e fale conosco diretamente pelo WhatsApp."}
+/>
+</Base>
+
+<script>
+  import '../scripts/casamentos.js';
+</script>

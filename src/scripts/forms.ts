@@ -207,6 +207,7 @@ export function initForms() {
         ...metaCapi,
       };
 
+      if (rawData['empresa']) payload['Empresa'] = rawData['empresa'];
       if (rawData['detalhes']) payload['Detalhes adicionais'] = rawData['detalhes'];
 
       try {

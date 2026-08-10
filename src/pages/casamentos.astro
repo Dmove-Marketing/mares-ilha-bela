@@ -7,14 +7,34 @@ import LeadForm from '../components/forms/LeadForm.astro';
 import WhatsAppModal from '../components/layout/WhatsAppModal.astro';
 import '../styles/casamentos.css';
 
+const tipoEventoOptions = [
+  { value: '', label: 'Selecione' },
+  { value: 'Aniversário', label: 'Aniversário' },
+  { value: 'Aniversário debutante', label: 'Aniversário debutante' },
+  { value: 'Bodas', label: 'Bodas' },
+  { value: 'Casamento', label: 'Casamento' },
+  { value: 'Confraternização corporativa', label: 'Confraternização corporativa' },
+  { value: 'Confraternização social', label: 'Confraternização social' },
+  { value: 'Corporativo', label: 'Corporativo' },
+  { value: 'Feiras e Exposições', label: 'Feiras e Exposições' },
+  { value: 'Formatura', label: 'Formatura' },
+  { value: 'Happy Hours', label: 'Happy Hours' },
+  { value: 'Masterclass e Palestras', label: 'Masterclass e Palestras' },
+  { value: 'Mentorias e Treinamentos', label: 'Mentorias e Treinamentos' },
+  { value: 'Offsite corporativo', label: 'Offsite corporativo' },
+  { value: 'Reuniões de Networking', label: 'Reuniões de Networking' },
+  { value: 'Shows e Festivais', label: 'Shows e Festivais' },
+  { value: 'Workshops, Conferências e Seminários', label: 'Workshops, Conferências e Seminários' },
+  { value: 'Outros', label: 'Outros' }
+];
+
+const waTipoEventoOptions = [
+  { value: '', label: 'Selecione o tipo de evento', disabled: true, selected: true },
+  ...tipoEventoOptions.slice(1)
+];
+
 const waStep1Fields = [
-  { name: 'tipo_evento', type: 'select', label: 'Tipo de Evento', required: true, options: [
-    { value: '', label: 'Selecione o tipo de evento', disabled: true, selected: true },
-    { value: 'bodas', label: 'Bodas' },
-    { value: 'casamento', label: 'Casamento' },
-    { value: 'confraternizacao', label: 'Confraternização social' },
-    { value: 'outros', label: 'Outros' },
-  ]},
+  { name: 'tipo_evento', type: 'select', label: 'Tipo de Evento', required: true, options: waTipoEventoOptions },
   { name: 'convidados', type: 'number', label: 'Número de Convidados', min: '1', required: true },
   { name: 'data_prevista', type: 'date', label: 'Data Prevista', required: true, min: '2024-01-01' },
   { name: 'mensagem', type: 'textarea', label: 'Mensagem (Opcional)', required: false, rows: 3, placeholder: 'Conte-nos um pouco sobre como imagina o seu dia especial...' },
@@ -237,13 +257,7 @@ const waStep1Fields = [
           { name: 'email', type: 'email', label: 'E-mail', required: true },
           { name: 'data', type: 'date', label: 'Data do evento', required: false },
           { name: 'pessoas', type: 'number', label: 'Número de pessoas', min: '1', required: false },
-          { name: 'tipo', type: 'select', label: 'Tipo de evento', required: false, full: true, options: [
-            { value: '', label: 'Selecione' },
-            { value: 'Bodas', label: 'Bodas' },
-            { value: 'Casamento', label: 'Casamento' },
-            { value: 'Confraternização social', label: 'Confraternização social' },
-            { value: 'Outros', label: 'Outros' }
-          ] },
+          { name: 'tipo', type: 'select', label: 'Tipo de evento', required: false, full: true, options: tipoEventoOptions },
           { name: 'detalhes', type: 'textarea', label: 'Detalhes adicionais', rows: 4, required: false, full: true }
         ]}
       />

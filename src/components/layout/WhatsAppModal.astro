@@ -33,8 +33,11 @@ interface Props {
    * Use os mesmos campos do LeadForm da página excluindo nome/email/telefone.
    */
   step1Fields?: Step1Field[];
+  step2Fields?: Step1Field[];
   /** Mensagem de boas-vindas exibida no modal (quebra de linha com \n) */
   welcomeMessage?: string;
+  /** Se true, coloca os dados de contato (nome, telefone, email) na Etapa 1 e step2Fields na Etapa 2 */
+  contactInStep1?: boolean;
 }
 
 const {
@@ -52,7 +55,9 @@ const {
       ],
     },
   ],
+  step2Fields = [],
   welcomeMessage = 'Olá! Como posso te ajudar?\nPreencha os campos abaixo e vamos conversar pelo WhatsApp.',
+  contactInStep1 = false,
 } = Astro.props;
 
 const waPhone   = config.whatsapp?.phone        || '5511999999999';
@@ -67,7 +72,7 @@ const welcomeLines = welcomeMessage.split('\n');
 
 // Mapa nome-do-campo → label legível para a mensagem do WhatsApp
 const fieldLabels: Record<string, string> = { nome: 'Nome', email: 'E-mail', telefone: 'Telefone' };
-step1Fields.forEach(f => {
+[...step1Fields, ...step2Fields].forEach(f => {
   fieldLabels[f.name] = f.label || f.placeholder || (f.name.charAt(0).toUpperCase() + f.name.slice(1).replace(/_/g, ' '));
 });
 ---
@@ -152,101 +157,218 @@ step1Fields.forEach(f => {
           data-field-labels={JSON.stringify(fieldLabels)}
           novalidate
         >
+          {!contactInStep1 ? (
+            /* MODAL PADRÃO */
+            <>
+              <div id="wa-step-1" class="wa-step active">
+                {step1Fields.map((f) => (
+                  <div class="wa-form-group">
+                    {f.label && <label class="wa-label" for={`wa-${f.name}`}>{f.label}</label>}
 
-          <!-- ETAPA 1: campos configuráveis via step1Fields -->
-          <div id="wa-step-1" class="wa-step active">
-            {step1Fields.map((f) => (
-              <div class="wa-form-group">
-                {f.label && <label class="wa-label" for={`wa-${f.name}`}>{f.label}</label>}
+                    {f.type === 'select' && (
+                      <select name={f.name} id={`wa-${f.name}`} required={f.required} class="wa-input wa-select">
+                        {f.options?.map((opt) => (
+                          <option value={opt.value} disabled={opt.disabled} selected={opt.selected}>{opt.label}</option>
+                        ))}
+                      </select>
+                    )}
 
-                {f.type === 'select' && (
-                  <select name={f.name} id={`wa-${f.name}`} required={f.required} class="wa-input wa-select">
-                    {f.options?.map((opt) => (
-                      <option value={opt.value} disabled={opt.disabled} selected={opt.selected}>{opt.label}</option>
-                    ))}
-                  </select>
-                )}
+                    {f.type === 'textarea' && (
+                      <textarea name={f.name} id={`wa-${f.name}`} placeholder={f.placeholder} required={f.required} rows={f.rows ?? 3} class="wa-input wa-textarea" />
+                    )}
 
-                {f.type === 'textarea' && (
-                  <textarea name={f.name} id={`wa-${f.name}`} placeholder={f.placeholder} required={f.required} rows={f.rows ?? 3} class="wa-input wa-textarea" />
-                )}
+                    {f.type === 'radio' && (
+                      <div class="wa-radio-group" role="group">
+                        {f.options?.map((opt) => (
+                          <label class="wa-radio-label">
+                            <input type="radio" name={f.name} value={opt.value} required={f.required} />
+                            <span>{opt.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
 
-                {f.type === 'radio' && (
-                  <div class="wa-radio-group" role="group">
-                    {f.options?.map((opt) => (
-                      <label class="wa-radio-label">
-                        <input type="radio" name={f.name} value={opt.value} required={f.required} />
-                        <span>{opt.label}</span>
-                      </label>
-                    ))}
+                    {f.type !== 'select' && f.type !== 'textarea' && f.type !== 'radio' && (
+                      <input
+                        type={f.type}
+                        name={f.name}
+                        id={`wa-${f.name}`}
+                        placeholder={f.placeholder}
+                        required={f.required}
+                        min={f.min}
+                        max={f.max}
+                        value={f.value}
+                        class="wa-input"
+                      />
+                    )}
                   </div>
-                )}
+                ))}
 
-                {f.type !== 'select' && f.type !== 'textarea' && f.type !== 'radio' && (
-                  <input
-                    type={f.type}
-                    name={f.name}
-                    id={`wa-${f.name}`}
-                    placeholder={f.placeholder}
-                    required={f.required}
-                    min={f.min}
-                    max={f.max}
-                    value={f.value}
-                    class="wa-input"
-                  />
-                )}
+                <button type="button" id="wa-next-btn" class="wa-btn wa-btn-primary">
+                  Continuar
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
-            ))}
 
-            <button type="button" id="wa-next-btn" class="wa-btn wa-btn-primary">
-              Continuar
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
+              <div id="wa-step-2" class="wa-step">
+                <div class="wa-form-group">
+                  <label class="wa-label" for="wa-nome">Seu Nome</label>
+                  <input type="text" name="nome" id="wa-nome" placeholder="Digite seu nome completo" required class="wa-input" autocomplete="name" />
+                </div>
+                <div class="wa-form-group">
+                  <label class="wa-label" for="wa-email">E-mail</label>
+                  <input type="email" name="email" id="wa-email" placeholder="seu@email.com" required class="wa-input" autocomplete="email" />
+                </div>
+                <div class="wa-form-group">
+                  <label class="wa-label" for="wa-telefone">WhatsApp</label>
+                  <input type="tel" name="telefone" id="wa-telefone" placeholder="(00) 00000-0000" required class="wa-input" autocomplete="tel" />
+                </div>
 
-          <!-- ETAPA 2: dados de contato (fixo) -->
-          <div id="wa-step-2" class="wa-step">
-            <div class="wa-form-group">
-              <label class="wa-label" for="wa-nome">Seu Nome</label>
-              <input type="text" name="nome" id="wa-nome" placeholder="Digite seu nome completo" required class="wa-input" autocomplete="name" />
-            </div>
-            <div class="wa-form-group">
-              <label class="wa-label" for="wa-email">E-mail</label>
-              <input type="email" name="email" id="wa-email" placeholder="seu@email.com" required class="wa-input" autocomplete="email" />
-            </div>
-            <div class="wa-form-group">
-              <label class="wa-label" for="wa-telefone">WhatsApp</label>
-              <input type="tel" name="telefone" id="wa-telefone" placeholder="(00) 00000-0000" required class="wa-input" autocomplete="tel" />
-            </div>
+                <div class="wa-btn-row">
+                  <button type="button" id="wa-prev-btn" class="wa-btn wa-btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Voltar
+                  </button>
+                  <button type="button" id="wa-submit-btn" class="wa-btn wa-btn-primary">
+                    <span class="btn-text">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.731-1.464L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.403.002 9.789-4.382 9.792-9.791.001-2.621-1.013-5.086-2.856-6.93C16.368 2.05 13.91 1.037 11.29 1.037c-5.4.001-9.79 4.384-9.793 9.793-.001 1.514.469 2.989 1.359 4.265l-.993 3.624 3.704-.971zm10.73-6.52c-.296-.148-1.748-.862-2.019-.962-.27-.099-.467-.148-.663.149-.197.296-.764.962-.937 1.16-.172.197-.344.222-.64.074-.296-.148-1.25-.46-2.381-1.468-.881-.785-1.475-1.756-1.648-2.052-.172-.296-.018-.456.13-.603.133-.132.296-.346.444-.519.148-.173.197-.296.296-.494.099-.198.05-.37-.025-.519-.074-.148-.663-1.6-.908-2.192-.239-.575-.483-.497-.663-.506-.172-.008-.37-.01-.566-.01s-.514.074-.783.37c-.27.296-1.03 1.008-1.03 2.46s1.056 2.852 1.203 3.05c.148.197 2.078 3.173 5.032 4.45.703.303 1.25.485 1.678.621.706.224 1.348.193 1.857.117.567-.084 1.748-.713 1.995-1.4.246-.688.246-1.28.172-1.4-.074-.122-.271-.19-.567-.34z" />
+                      </svg>
+                      Iniciar conversa
+                    </span>
+                    <span class="btn-loading" style="display:none;">
+                      <svg class="wa-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)" />
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+                      </svg>
+                      Conectando...
+                    </span>
+                  </button>
+                </div>
+                <p class="wa-privacy">Ao enviar, você concorda com nossa política de privacidade.</p>
+              </div>
+            </>
+          ) : (
+            /* MODAL COM CONTATO NA ETAPA 1 (Empresa, Nome, Telefone, E-mail na Etapa 1) */
+            <>
+              <div id="wa-step-1" class="wa-step active">
+                {step1Fields.map((f) => (
+                  <div class="wa-form-group">
+                    {f.label && <label class="wa-label" for={`wa-${f.name}`}>{f.label}</label>}
 
-            <div class="wa-btn-row">
-              <button type="button" id="wa-prev-btn" class="wa-btn wa-btn-secondary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-                Voltar
-              </button>
-              <button type="button" id="wa-submit-btn" class="wa-btn wa-btn-primary">
-                <span class="btn-text">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.731-1.464L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.403.002 9.789-4.382 9.792-9.791.001-2.621-1.013-5.086-2.856-6.93C16.368 2.05 13.91 1.037 11.29 1.037c-5.4.001-9.79 4.384-9.793 9.793-.001 1.514.469 2.989 1.359 4.265l-.993 3.624 3.704-.971zm10.73-6.52c-.296-.148-1.748-.862-2.019-.962-.27-.099-.467-.148-.663.149-.197.296-.764.962-.937 1.16-.172.197-.344.222-.64.074-.296-.148-1.25-.46-2.381-1.468-.881-.785-1.475-1.756-1.648-2.052-.172-.296-.018-.456.13-.603.133-.132.296-.346.444-.519.148-.173.197-.296.296-.494.099-.198.05-.37-.025-.519-.074-.148-.663-1.6-.908-2.192-.239-.575-.483-.497-.663-.506-.172-.008-.37-.01-.566-.01s-.514.074-.783.37c-.27.296-1.03 1.008-1.03 2.46s1.056 2.852 1.203 3.05c.148.197 2.078 3.173 5.032 4.45.703.303 1.25.485 1.678.621.706.224 1.348.193 1.857.117.567-.084 1.748-.713 1.995-1.4.246-.688.246-1.28.172-1.4-.074-.122-.271-.19-.567-.34z" />
+                    {f.type === 'select' && (
+                      <select name={f.name} id={`wa-${f.name}`} required={f.required} class="wa-input wa-select">
+                        {f.options?.map((opt) => (
+                          <option value={opt.value} disabled={opt.disabled} selected={opt.selected}>{opt.label}</option>
+                        ))}
+                      </select>
+                    )}
+
+                    {f.type === 'textarea' && (
+                      <textarea name={f.name} id={`wa-${f.name}`} placeholder={f.placeholder} required={f.required} rows={f.rows ?? 3} class="wa-input wa-textarea" />
+                    )}
+
+                    {f.type !== 'select' && f.type !== 'textarea' && f.type !== 'radio' && (
+                      <input
+                        type={f.type}
+                        name={f.name}
+                        id={`wa-${f.name}`}
+                        placeholder={f.placeholder}
+                        required={f.required}
+                        min={f.min}
+                        max={f.max}
+                        value={f.value}
+                        class="wa-input"
+                      />
+                    )}
+                  </div>
+                ))}
+
+                <div class="wa-form-group">
+                  <label class="wa-label" for="wa-nome">Seu Nome</label>
+                  <input type="text" name="nome" id="wa-nome" placeholder="Digite seu nome completo" required class="wa-input" autocomplete="name" />
+                </div>
+                <div class="wa-form-group">
+                  <label class="wa-label" for="wa-telefone">WhatsApp</label>
+                  <input type="tel" name="telefone" id="wa-telefone" placeholder="(00) 00000-0000" required class="wa-input" autocomplete="tel" />
+                </div>
+                <div class="wa-form-group">
+                  <label class="wa-label" for="wa-email">E-mail</label>
+                  <input type="email" name="email" id="wa-email" placeholder="seu@email.com" required class="wa-input" autocomplete="email" />
+                </div>
+
+                <button type="button" id="wa-next-btn" class="wa-btn wa-btn-primary">
+                  Continuar
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
-                  Iniciar conversa
-                </span>
-                <span class="btn-loading" style="display:none;">
-                  <svg class="wa-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)" />
-                    <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
-                  </svg>
-                  Conectando...
-                </span>
-              </button>
-            </div>
-            <p class="wa-privacy">Ao enviar, você concorda com nossa política de privacidade.</p>
-          </div>
+                </button>
+              </div>
 
+              <div id="wa-step-2" class="wa-step">
+                {step2Fields.map((f) => (
+                  <div class="wa-form-group">
+                    {f.label && <label class="wa-label" for={`wa-${f.name}`}>{f.label}</label>}
+
+                    {f.type === 'select' && (
+                      <select name={f.name} id={`wa-${f.name}`} required={f.required} class="wa-input wa-select">
+                        {f.options?.map((opt) => (
+                          <option value={opt.value} disabled={opt.disabled} selected={opt.selected}>{opt.label}</option>
+                        ))}
+                      </select>
+                    )}
+
+                    {f.type === 'textarea' && (
+                      <textarea name={f.name} id={`wa-${f.name}`} placeholder={f.placeholder} required={f.required} rows={f.rows ?? 3} class="wa-input wa-textarea" />
+                    )}
+
+                    {f.type !== 'select' && f.type !== 'textarea' && f.type !== 'radio' && (
+                      <input
+                        type={f.type}
+                        name={f.name}
+                        id={`wa-${f.name}`}
+                        placeholder={f.placeholder}
+                        required={f.required}
+                        min={f.min}
+                        max={f.max}
+                        value={f.value}
+                        class="wa-input"
+                      />
+                    )}
+                  </div>
+                ))}
+
+                <div class="wa-btn-row">
+                  <button type="button" id="wa-prev-btn" class="wa-btn wa-btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Voltar
+                  </button>
+                  <button type="button" id="wa-submit-btn" class="wa-btn wa-btn-primary">
+                    <span class="btn-text">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.731-1.464L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.403.002 9.789-4.382 9.792-9.791.001-2.621-1.013-5.086-2.856-6.93C16.368 2.05 13.91 1.037 11.29 1.037c-5.4.001-9.79 4.384-9.793 9.793-.001 1.514.469 2.989 1.359 4.265l-.993 3.624 3.704-.971zm10.73-6.52c-.296-.148-1.748-.862-2.019-.962-.27-.099-.467-.148-.663.149-.197.296-.764.962-.937 1.16-.172.197-.344.222-.64.074-.296-.148-1.25-.46-2.381-1.468-.881-.785-1.475-1.756-1.648-2.052-.172-.296-.018-.456.13-.603.133-.132.296-.346.444-.519.148-.173.197-.296.296-.494.099-.198.05-.37-.025-.519-.074-.148-.663-1.6-.908-2.192-.239-.575-.483-.497-.663-.506-.172-.008-.37-.01-.566-.01s-.514.074-.783.37c-.27.296-1.03 1.008-1.03 2.46s1.056 2.852 1.203 3.05c.148.197 2.078 3.173 5.032 4.45.703.303 1.25.485 1.678.621.706.224 1.348.193 1.857.117.567-.084 1.748-.713 1.995-1.4.246-.688.246-1.28.172-1.4-.074-.122-.271-.19-.567-.34z" />
+                      </svg>
+                      Iniciar conversa
+                    </span>
+                    <span class="btn-loading" style="display:none;">
+                      <svg class="wa-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)" />
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+                      </svg>
+                      Conectando...
+                    </span>
+                  </button>
+                </div>
+                <p class="wa-privacy">Ao enviar, você concorda com nossa política de privacidade.</p>
+              </div>
+            </>
+          )}
         </form>
       </div>
 
@@ -457,6 +579,7 @@ step1Fields.forEach(f => {
         'form_name': 'whats_casamentos',
       };
 
+      if (data['empresa']) payload['Empresa'] = data['empresa'];
       if (data['mensagem']) payload['Mensagem'] = data['mensagem'];
 
       ['fbc', 'fbp', 'external_id', 'event_id'].forEach(k => {
