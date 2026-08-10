@@ -19,7 +19,7 @@
 }
 
 /* ---------- INFRAESTRUTURA (CORPORATIVO) ---------- */
-#infra .center-head h1 strong.infra-title-bold {
+#infra .center-head h2 strong.infra-title-bold {
   font-weight: 600;
   font-style: normal;
   color: var(--white);
@@ -30,10 +30,6 @@
   #contato .contato-grid {
     grid-template-columns: 1.05fr 0.95fr;
     gap: 60px;
-  }
-  #contato .contato-info h1 {
-    font-size: clamp(2.2rem, 3.5vw, 3.6rem);
-    line-height: 1.05;
   }
 }
 
