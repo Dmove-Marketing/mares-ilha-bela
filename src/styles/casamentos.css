@@ -18,8 +18,7 @@ ul{list-style:none;}
   --white:#ffffff;
   --ink:#0c1c30;
   --maxw:1280px;
-  --white-texture:linear-gradient(rgba(255,255,255,.7),rgba(255,255,255,.7)), url("https://media.dmove.com.br/clients/mares-ilha-bela/photos/textura_resultado.webp");
-  --white-texture-size:720px 720px;
+  --white-texture:linear-gradient(rgba(255,255,255,.95),rgba(255,255,255,.95)), url("https://media.dmove.com.br/clients/mares-ilha-bela/photos/textura_v2_resultado.webp");
 }
 
 body{
@@ -282,7 +281,13 @@ section{padding:80px 0;}
 }
 
 /* ---------- SALAO ---------- */
-#salao{background-color:var(--white);background-image:var(--white-texture);background-repeat:repeat;background-size:var(--white-texture-size);}
+#salao{
+  background-color:var(--white);
+  background-image:var(--white-texture);
+  background-repeat:no-repeat;
+  background-size:cover;
+  background-position:center;
+}
 .salao-grid{
   display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:1fr 1fr;gap:20px;height:640px;
 }
@@ -321,7 +326,13 @@ section{padding:80px 0;}
 }
 
 /* ---------- GALERIA ---------- */
-#galeria{background-color:var(--white);background-image:var(--white-texture);background-repeat:repeat;background-size:var(--white-texture-size);}
+#galeria{
+  background-color:var(--white);
+  background-image:var(--white-texture);
+  background-repeat:no-repeat;
+  background-size:cover;
+  background-position:center;
+}
 .mosaic-grid{display:flex;flex-direction:column;gap:18px;}
 .mosaic-block{display:grid;gap:18px;height:480px;}
 
@@ -554,10 +565,10 @@ form#wedding-form .full {
 /* ---------- LOCALIZACAO ---------- */
 #local{background:var(--cream);}
 .local-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:start;}
-.map-frame{width:100%;aspect-ratio:4/3.4;border:1px solid rgba(7,32,71,.12);overflow:hidden;position:relative;}
+.map-frame{width:100%;aspect-ratio:4/3.4;border:1px solid rgba(7,32,71,.12);overflow:hidden;position:relative;margin-top:10px;}
 .map-frame iframe{width:100%;height:100%;border:0;pointer-events:none!important;}
 .map-frame::after{content:"";position:absolute;inset:0;z-index:10;pointer-events:auto;cursor:default;}
-.hotels h3{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;font-weight:400;}
+.hotels h3{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;font-weight:400;}
 .hotel{padding:18px 0;border-bottom:1px solid rgba(7,32,71,.1);display:flex;justify-content:space-between;gap:16px;}
 .hotel:first-child{padding-top:0;}
 .hotel .h-name{color:var(--navy);font-weight:400;font-size:1rem;margin-bottom:4px;}
