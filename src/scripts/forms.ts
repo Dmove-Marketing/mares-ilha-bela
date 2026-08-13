@@ -210,6 +210,13 @@ export function initForms() {
       if (rawData['empresa']) payload['Empresa'] = rawData['empresa'];
       if (rawData['detalhes']) payload['Detalhes adicionais'] = rawData['detalhes'];
 
+      // Inclui quaisquer outros campos ocultos/injetados no formulário
+      Object.keys(rawData).forEach((k) => {
+        if (!(k in payload) && rawData[k]) {
+          payload[k] = rawData[k];
+        }
+      });
+
       try {
         const res = await fetch(submitUrl, {
           method: 'POST',

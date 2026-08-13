@@ -46,5 +46,51 @@
       page_path: window.location.pathname,
       ...trackingData
     });
+
+    // Injeta automaticamente os campos ocultos de UTM e parâmetros de rastreamento nos formulários
+    function injectFormTracking() {
+      const forms = document.querySelectorAll<HTMLFormElement>('form');
+      if (!forms.length) return;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const storedRaw = sessionStorage.getItem('dmove_tracking');
+      const stored: Record<string, string> = storedRaw ? JSON.parse(storedRaw) : {};
+
+      const fullUrl = window.location.href;
+      const pathName = window.location.pathname;
+      const searchParams = window.location.search;
+
+      const dataToInject: Record<string, string> = {
+        "utm_source": urlParams.get('utm_source') || stored['utm_source'] || '',
+        "utm_medium": urlParams.get('utm_medium') || stored['utm_medium'] || '',
+        "utm_campaign": urlParams.get('utm_campaign') || stored['utm_campaign'] || '',
+        "utm_content": urlParams.get('utm_content') || stored['utm_content'] || '',
+        "utm_term": urlParams.get('utm_term') || stored['utm_term'] || '',
+        "fbclid": urlParams.get('fbclid') || stored['fbclid'] || '',
+        "landing_page": pathName,
+        "landing_url": fullUrl,
+        "URL da página": fullUrl,
+        "Fonte": `Landing page${pathName}${searchParams}`
+      };
+
+      forms.forEach(form => {
+        Object.keys(dataToInject).forEach(key => {
+          let input = form.querySelector<HTMLInputElement>(`input[name="${key}"]`);
+          if (!input) {
+            input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            form.appendChild(input);
+          }
+          input.value = dataToInject[key];
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', injectFormTracking);
+    } else {
+      injectFormTracking();
+    }
   })();
 </script>
