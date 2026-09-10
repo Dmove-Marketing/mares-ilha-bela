@@ -1,0 +1,67 @@
+name: Cloudflare Pages — Preview + Teste Visual
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  preview-e-teste:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build do site
+        run: npm run build
+
+      - name: Deploy de preview no Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=mares-ilha-bela --branch=teste-cloudflare
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Instalar navegador do Playwright (usado no teste visual)
+        run: npx playwright install --with-deps chromium
+
+      - name: Comparar cada página contra a produção atual
+        continue-on-error: true
+        run: |
+          echo "Preview publicado em: ${{ steps.deploy.outputs.deployment-url }}"
+          FALHOU=0
+          for slug in index casamentos eventos-corporativos bio; do
+            npm run compare -- --slug=$slug --prod=https://eventos.maresilhamall.com.br --local=${{ steps.deploy.outputs.deployment-url }} || FALHOU=1
+          done
+          echo "houve_diferenca=$FALHOU" >> "$GITHUB_ENV"
+
+      - name: Resumo no painel do Actions
+        if: always()
+        run: |
+          echo "## Preview publicado" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.deploy.outputs.deployment-url }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$houve_diferenca" = "1" ]; then
+            echo "⚠️ Uma ou mais páginas tiveram diferença visual acima de 5% em algum viewport. Baixe o artefato **vrt-diffs** desta execução (final da página) para ver os diffs antes de seguir." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "✅ Todas as páginas dentro do threshold de 5%. Pronto para os próximos passos do piloto." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Subir os diffs como artefato para download
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vrt-diffs
+          path: scripts/vrt-output/
+          retention-days: 14
