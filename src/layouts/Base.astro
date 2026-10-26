@@ -35,6 +35,10 @@ interface Props {
   jsonLd?: Record<string, any>;
   /** Campos da etapa 1 do popup WhatsApp — mesmas opções do LeadForm da página */
   whatsAppStep1Fields?: WhatsAppStep1Field[];
+  /** Campos da etapa 2 do popup WhatsApp — usados quando whatsAppContactInStep1 é true */
+  whatsAppStep2Fields?: WhatsAppStep1Field[];
+  /** Se true, o popup WhatsApp pede os dados de contato na etapa 1 e whatsAppStep2Fields na etapa 2 */
+  whatsAppContactInStep1?: boolean;
   /** Mensagem de boas-vindas do popup WhatsApp (use \n para quebrar linha) */
   whatsAppMessage?: string;
 }
@@ -48,6 +52,8 @@ const {
   theme = 'dark',
   jsonLd,
   whatsAppStep1Fields,
+  whatsAppStep2Fields,
+  whatsAppContactInStep1,
   whatsAppMessage,
 } = Astro.props;
 
@@ -118,6 +124,8 @@ const defaultJsonLd = {
     <!-- WhatsApp Flutuante — configurar em config.json > whatsapp -->
     <WhatsAppModal
       step1Fields={whatsAppStep1Fields}
+      step2Fields={whatsAppStep2Fields}
+      contactInStep1={whatsAppContactInStep1}
       welcomeMessage={whatsAppMessage}
     />
 

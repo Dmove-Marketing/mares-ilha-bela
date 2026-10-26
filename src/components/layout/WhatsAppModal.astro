@@ -3,7 +3,7 @@
 // Botão flutuante WhatsApp + popup com formulário em 2 etapas.
 // Etapa 1: campos configuráveis via prop `step1Fields` (padrão: select de assunto)
 // Etapa 2: dados de contato fixos (nome, email, telefone)
-// Número, avatar e nome do atendente vêm de config.json > whatsapp
+// Número, avatar, nome do atendente e mensagem inicial vêm de config.json > whatsapp
 
 import config from '../../../config.json';
 
@@ -64,17 +64,12 @@ const waPhone   = config.whatsapp?.phone        || '5511999999999';
 const waName    = config.whatsapp?.display_name || config.project_name || 'Atendimento';
 const waAvatar  = config.whatsapp?.avatar       || '/images/perfil.webp';
 const waEnabled = config.whatsapp?.enabled !== false;
+const waMessage = config.whatsapp?.message      || 'Olá! Gostaria de mais informações.';
 
 const webhookUrl  = config.forms['lead-form']?.webhooks[0] || '';
 const projectSlug = config.project_slug || '';
 
 const welcomeLines = welcomeMessage.split('\n');
-
-// Mapa nome-do-campo → label legível para a mensagem do WhatsApp
-const fieldLabels: Record<string, string> = { nome: 'Nome', email: 'E-mail', telefone: 'Telefone' };
-[...step1Fields, ...step2Fields].forEach(f => {
-  fieldLabels[f.name] = f.label || f.placeholder || (f.name.charAt(0).toUpperCase() + f.name.slice(1).replace(/_/g, ' '));
-});
 ---
 
 {waEnabled && (
@@ -154,7 +149,7 @@ const fieldLabels: Record<string, string> = { nome: 'Nome', email: 'E-mail', tel
           data-webhook-url={webhookUrl}
           data-project-slug={projectSlug}
           data-wa-phone={waPhone}
-          data-field-labels={JSON.stringify(fieldLabels)}
+          data-wa-message={waMessage}
           novalidate
         >
           {!contactInStep1 ? (
@@ -396,12 +391,7 @@ const fieldLabels: Record<string, string> = { nome: 'Nome', email: 'E-mail', tel
     const webhookUrl  = form.dataset.webhookUrl || '';
     const projectSlug = form.dataset.projectSlug || '';
     const waPhone     = form.dataset.waPhone || '5511999999999';
-    let fieldLabels: Record<string, string> = {};
-    try {
-      fieldLabels = JSON.parse(form.dataset.fieldLabels || '{}');
-    } catch (e) {
-      console.error(e);
-    }
+    const waMessage   = form.dataset.waMessage || '';
 
     // ─── Abre/Fecha modal ────────────────────────────────────────────
     floatBtn.addEventListener('click', (e) => {
@@ -602,15 +592,8 @@ const fieldLabels: Record<string, string> = { nome: 'Nome', email: 'E-mail', tel
         (window as any).dataLayer.push({ event: 'form_submit', form_id: 'form_whatsapp', project: projectSlug });
       }
 
-      // Mensagem WhatsApp construída dinamicamente a partir dos campos
-      const msgLines = ['Olá! Gostaria de mais informações:', ''];
-      Object.entries(data).forEach(([key, val]) => {
-        if (!val) return;
-        const label = fieldLabels[key] || (key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '));
-        msgLines.push(`*${label}:* ${val}`);
-      });
-
-      const waUrl = `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(msgLines.join('\n'))}`;
+      // Mensagem fixa (config.json > whatsapp.message) — os dados do lead já foram ao webhook
+      const waUrl = `https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(waMessage)}`;
 
       setTimeout(() => {
         closeModal();

@@ -3,7 +3,6 @@ import Base from '../layouts/Base.astro';
 import config from '../../config.json';
 import Img from '../components/ui/Img.astro';
 import LeadForm from '../components/forms/LeadForm.astro';
-import WhatsAppModal from '../components/layout/WhatsAppModal.astro';
 import '../styles/eventos-corporativos.css';
 
 const tipoEventoOptions = [
@@ -48,6 +47,10 @@ const waStep2Fields = [
   title="Espaço Mares | Eventos Corporativos em Ilhabela"
   description="Realize seu evento corporativo com vista para o mar de Ilhabela. Estrutura versátil integrada ao Mares Ilha Mall para confraternizações, palestras, treinamentos e lançamentos."
   ogImage="https://media.dmove.com.br/clients/mares-ilha-bela/photos/hero_corporativos_resultado.webp"
+  whatsAppContactInStep1={true}
+  whatsAppStep1Fields={waStep1Fields}
+  whatsAppStep2Fields={waStep2Fields}
+  whatsAppMessage={"Olá! Quer realizar o seu evento corporativo no Espaço Mares?\nPreencha os dados abaixo e fale conosco diretamente pelo WhatsApp."}
 >
 <!-- ===================== HEADER ===================== -->
 <header id="site-header">
@@ -410,13 +413,6 @@ const waStep2Fields = [
     </div>
   </div>
 </footer>
-
-<WhatsAppModal
-  contactInStep1={true}
-  step1Fields={waStep1Fields}
-  step2Fields={waStep2Fields}
-  welcomeMessage={"Olá! Quer realizar o seu evento corporativo no Espaço Mares?\nPreencha os dados abaixo e fale conosco diretamente pelo WhatsApp."}
-/>
 </Base>
 
 <script>

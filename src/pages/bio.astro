@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import config from '../../config.json';
 import LeadForm from '../components/forms/LeadForm.astro';
-import WhatsAppModal from '../components/layout/WhatsAppModal.astro';
 import '../styles/casamentos.css';
 
 const bioTipoOptions = [
@@ -43,6 +42,8 @@ const waStep1Fields = [
   title="Espaço Mares | Eventos e Comemorações em Ilhabela"
   description="A beleza natural de Ilhabela como cenário da sua comemoração. Celebre de frente para o mar no Espaço Mares."
   ogImage="https://media.dmove.com.br/clients/mares-ilha-bela/photos/fundo-bio.webp"
+  whatsAppStep1Fields={waStep1Fields}
+  whatsAppMessage={"Olá! Quer realizar o seu evento no Espaço Mares?\nPreencha os dados abaixo e fale conosco diretamente pelo WhatsApp."}
 >
   <!-- ===================== CONTATO BIO (SINGLE COLUMN) ===================== -->
   <section id="contato" class="reveal bio-single-col">
@@ -106,11 +107,6 @@ const waStep1Fields = [
       </div>
     </div>
   </footer>
-
-  <WhatsAppModal
-    step1Fields={waStep1Fields}
-    welcomeMessage={"Olá! Quer realizar o seu evento no Espaço Mares?\nPreencha os dados abaixo e fale conosco diretamente pelo WhatsApp."}
-  />
 </Base>
 
 <script>
